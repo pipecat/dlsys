@@ -130,7 +130,22 @@ class Sequential(Module):
 class SoftmaxLoss(Module):
     def forward(self, logits: Tensor, y: Tensor):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        
+        # exp_sum = ops.summation(ops.exp(logits), axes=-1)
+        # C = logits.shape[-1]
+        # loss = Tensor(0, device=logits.device, dtype=logits.dtype)
+        # for i in range(y.shape[0]):
+        #     one_hot = init.one_hot(C, y[i], device=logits.device, dtype=logits.dtype)
+        #     loss = loss -ops.summation(one_hot * logits, axes=-1) + ops.log(exp_sum)
+        # return -loss / y.shape[0]
+        #
+        # ↑ TypeError: 'Tensor' object is not subscriptable
+
+        one_hot_y = init.one_hot(logits.shape[-1], y, device=logits.device, dtype=logits.dtype)
+        lse = ops.logsumexp(logits, axes=(-1,))
+        Z_y = ops.summation(logits * one_hot_y, axes=(-1,))
+        return ops.summation(lse - Z_y) / logits.shape[0]
+
         ### END YOUR SOLUTION
 
 

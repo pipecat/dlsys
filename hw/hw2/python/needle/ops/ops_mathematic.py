@@ -227,8 +227,6 @@ class Summation(TensorOp):
 
     def gradient(self, out_grad, node):
         ### BEGIN YOUR SOLUTION
-        # shape = [1 if i in self.axes else node.inputs[0].shape[i] for i in range(len(node.inputs[0].shape))]
-        # return out_grad.reshape(shape).broadcast_to(node.inputs[0].shape)
         new_shape = list(node.inputs[0].shape)
         axes = range(len(new_shape)) if self.axes is None else self.axes
         for axis in axes:
