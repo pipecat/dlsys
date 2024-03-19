@@ -88,8 +88,8 @@ class Linear(Module):
         self.out_features = out_features
 
         ### BEGIN YOUR SOLUTION
-        self.weight = init.kaiming_uniform(in_features, out_features, device=device, dtype=dtype)
-        self.bias = init.kaiming_uniform(out_features, 1, device=device, dtype=dtype).transpose() if bias else None
+        self.weight = Parameter(init.kaiming_uniform(in_features, out_features, device=device, dtype=dtype))
+        self.bias = Parameter(init.kaiming_uniform(out_features, 1, device=device, dtype=dtype).transpose() if bias else None)
         self.device = device
         self.dtype = dtype
         ### END YOUR SOLUTION
@@ -140,11 +140,11 @@ class SoftmaxLoss(Module):
         # return -loss / y.shape[0]
         #
         # ↑ TypeError: 'Tensor' object is not subscriptable
-
         one_hot_y = init.one_hot(logits.shape[-1], y, device=logits.device, dtype=logits.dtype)
         lse = ops.logsumexp(logits, axes=(-1,))
         Z_y = ops.summation(logits * one_hot_y, axes=(-1,))
-        return ops.summation(lse - Z_y) / logits.shape[0]
+        out = ops.summation(lse - Z_y) / logits.shape[0]
+        return out
 
         ### END YOUR SOLUTION
 
