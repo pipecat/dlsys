@@ -29,7 +29,7 @@ class SGD(Optimizer):
     def step(self):
         ### BEGIN YOUR SOLUTION
         for p in self.params:
-            if p is None or p.grad is None:
+            if p.grad is None:
                 continue
             if self.weight_decay > 0:
                 grad = p.grad.data + self.weight_decay * p.data
@@ -79,5 +79,20 @@ class Adam(Optimizer):
 
     def step(self):
         ### BEGIN YOUR SOLUTION
-        raise NotImplementedError()
+        self.t += 1
+        for p in self.params:
+            if p.grad is None:
+                continue
+            if self.weight_decay > 0:
+                grad = p.grad.data + self.weight_decay * p.data
+            else:
+                grad = p.grad.data
+            p_id = id(p)
+            if p_id not in self.m:
+                self.m[p_id] = ndl.init.zeros(*grad.shape, device=grad.device, dtype=grad.dtype)
+                self.v[p_id] = ndl.init.zeros(*grad.shape, device=grad.device, dtype=grad.dtype)
+            self.m[p_id] = self.beta1 * self.m[p_id] + (1 - self.beta1) * grad
+            self.v[p_id] = self.beta2 * self.v[p_id] + (1 - self.beta2) * grad ** 2
+            p.data = p.data - self.lr * self.m[p_id] / (1 - self.beta1 ** self.t) / ((self.v[p_id] / (1 - self.beta2 ** self.t)) ** 0.5 + self.eps)
+
         ### END YOUR SOLUTION
